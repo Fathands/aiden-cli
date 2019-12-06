@@ -2,8 +2,12 @@
  * @Author: Aiden
  * @Date: 2019-12-03 11:35:52
  * @LastEditors: Aiden
- * @LastEditTime: 2019-12-03 15:42:49
+ * @LastEditTime: 2019-12-06 18:50:55
  */
+
+const ora = require('ora')
+const execa = require('execa')
+const spinner = ora()
 
 /**
  * @description: 大写
@@ -31,6 +35,36 @@ function cleanArgs(cmd) {
   return args
 }
 
+/**
+ * @description: 安装依赖
+ * @param {type} 
+ * @return: 
+ */
+async function installDeps (targetDir) {
+  console.log('\n');
+  spinner.text = `⚙  安装依赖中...`
+  spinner.start()
+  let args = ['install', '--loglevel', 'error']
+  
+  return new Promise((resolve, reject) => {
+
+    const child = execa('npm', args, {
+      cwd: targetDir
+    })
+
+    child.on('close', code => {
+      if (code !== 0) {
+        reject(`command failed: npm ${args.join(' ')}`)
+        spinner.stop()
+        return
+      }
+      spinner.stop()
+      resolve()
+    })
+  })
+}
+
 module.exports = {
-  cleanArgs
+  cleanArgs,
+  installDeps
 }

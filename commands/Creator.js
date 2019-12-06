@@ -3,28 +3,8 @@ const inquirer = require('inquirer')
 const EventEmitter = require('events')
 const ora = require('ora')
 const spinner = ora()
-// const loadRemotePreset = require('../lib/utils/loadRemotePreset')
-// const writeFileTree = require('../lib/utils/writeFileTree')
-// const copyFile = require('../lib/utils/copyFile')
-// const generateReadme = require('../lib/utils/generateReadme')
-// const {installDeps} = require('../lib/utils/installDeps')
 
-// const {
-//   defaults
-// } = require('../lib/options')
-
-// const {
-//   // log,
-//   // error,
-//   // hasYarn,
-//   // hasGit,
-//   // hasProjectGit,
-//   // logWithSpinner,
-//   clearConsole,
-//   // stopSpinner,
-//   // exit
-// } = require('../lib/utils/common')
-
+const { installDeps } = require('../utils/common-util');
 const { error, clearConsole } = require('../utils/logger-util');
 const loadRemotePreset = require('../utils/load-remote-preset-util');
 const copyFile = require('../utils/copy-file-util');
@@ -40,7 +20,7 @@ module.exports = class Creator extends EventEmitter {
   }
 
   async create(cliOptions = {}) {
-    const { run, name, target_dir } = this
+    const { name, target_dir } = this
     let preset = null
     
     const { template } = await inquirer.prompt([
@@ -99,7 +79,7 @@ module.exports = class Creator extends EventEmitter {
       description: package_des
     })
 
-    // write package.json
+    // 重写 package.json 和 README.md
     await clearConsole()
     spinner.text = `📄  生成 ${chalk.yellow('package.json')} 等模板文件`
     spinner.start()
@@ -113,17 +93,9 @@ module.exports = class Creator extends EventEmitter {
     
     // 安装依赖
     await clearConsole()
-    spinner.text = `⚙  安装依赖`
-    spinner.start()
-    // const packageManager = (
-    //   (hasYarn() ? 'yarn' : null) ||
-    //   (hasPnpm3OrLater() ? 'pnpm' : 'npm')
-    // )
-    
-    // await installDeps(target_dir, packageManager, cliOptions.registry)
-    spinner.stop()
+    await installDeps(target_dir)
       
-    // log instructions
+    // 创建成功
     await clearConsole()
     console.log(`\n✨  项目创建成功 ${chalk.yellow(name)}.`)
     console.log(`\n✨  请按如下命令，开始愉快开发吧！\n\n` +

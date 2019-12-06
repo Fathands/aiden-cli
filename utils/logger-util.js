@@ -2,7 +2,7 @@
  * @Author: Aiden
  * @Date: 2019-12-03 16:24:18
  * @LastEditors: Aiden
- * @LastEditTime: 2019-12-03 20:13:28
+ * @LastEditTime: 2019-12-06 18:42:07
  */
 
 const chalk = require('chalk');
@@ -36,14 +36,11 @@ exports.error = (msg, tag = null) => {
  * @param {type} 
  * @return: 
  */
-exports.clearConsole = title => {
+exports.clearConsole = () => {
   if (process.stdout.isTTY) {
     const blank = '\n'.repeat(process.stdout.rows)
     console.log(blank)
     readline.cursorTo(process.stdout, 0, 0)
     readline.clearScreenDown(process.stdout)
-    if (title) {
-      console.log(title)
-    }
   }
 }

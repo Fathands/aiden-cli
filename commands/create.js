@@ -2,7 +2,7 @@
  * @Author: Aiden
  * @Date: 2019-12-03 11:30:27
  * @LastEditors: Aiden
- * @LastEditTime: 2019-12-04 16:23:56
+ * @LastEditTime: 2019-12-06 18:57:42
  */
 
 const path = require('path');
@@ -27,7 +27,7 @@ async function create (projectName, options) {
   // 是否在当前目录
   const inCurrent = projectName === '.'
   const name = inCurrent ? path.relative('../', cwd) : projectName
-  const targetDir = path.resolve(cwd, projectName || '.')
+  const target_dir = path.resolve(cwd, projectName || '.')
   
   await clearConsole();
     
@@ -42,12 +42,12 @@ async function create (projectName, options) {
     if (!ok) {
       return
     }
-  } else if (fs.existsSync(targetDir)) { // 检查文件夹是否存在
+  } else if (fs.existsSync(target_dir)) { // 检查文件夹是否存在
     const { action } = await inquirer.prompt([
       {
         name: 'action',
         type: 'list',
-        message: `目标文件夹 ${chalk.cyan(targetDir)} 已经存在，请选择：`,
+        message: `目标文件夹 ${chalk.cyan(target_dir)} 已经存在，请选择：`,
         choices: [
           { name: '覆盖', value: true },
           { name: '取消', value: false }
@@ -57,16 +57,17 @@ async function create (projectName, options) {
     if (!action) {
       return
     } else if (action) {
-      spinner.text = `${chalk.red('removing')} ${chalk.cyan(targetDir)}`
+      console.log('\n');
+      spinner.text = `${chalk.red('removing')} ${chalk.cyan(target_dir)}`
       spinner.start()
-      await fs.remove(targetDir)
+      await fs.remove(target_dir)
       spinner.stop()
     }
   }
   await clearConsole()
 
   // 前面完成准备工作，正式开始创建项目
-  const creator = new Creator(name, targetDir)
+  const creator = new Creator(name, target_dir)
   await creator.create(options)
 }
 
