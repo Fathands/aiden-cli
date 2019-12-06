@@ -2,7 +2,7 @@
  * @Author: Aiden
  * @Date: 2019-12-03 16:24:18
  * @LastEditors: Aiden
- * @LastEditTime: 2019-12-03 19:41:15
+ * @LastEditTime: 2019-12-03 20:13:28
  */
 
 const chalk = require('chalk');
@@ -16,6 +16,8 @@ const format = (label, msg) => {
       : padStart(line, chalk.reset(label).length)
   }).join('\n')
 }
+
+const chalkTag = tag => chalk.bgBlackBright.white.dim(` ${tag} `)
  
 /**
  * @description: 错误日志

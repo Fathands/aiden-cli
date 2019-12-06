@@ -2,17 +2,19 @@
  * @Author: Aiden
  * @Date: 2019-12-03 11:30:27
  * @LastEditors: Aiden
- * @LastEditTime: 2019-12-03 20:09:55
+ * @LastEditTime: 2019-12-04 16:23:56
  */
 
 const path = require('path');
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const chalk = require('chalk');
+const ora = require('ora');
 
+const Creator = require('./Creator')
 const { error, clearConsole } = require('../utils/logger-util');
-const { exit } = require('../utils/exit-util');
 
+const spinner = ora();
 
 /**
  * @description: 创建项目
@@ -55,21 +57,22 @@ async function create (projectName, options) {
     if (!action) {
       return
     } else if (action) {
-      console.log(`\n${chalk.red('removing')} ${chalk.cyan(targetDir)}`)
+      spinner.text = `${chalk.red('removing')} ${chalk.cyan(targetDir)}`
+      spinner.start()
       await fs.remove(targetDir)
+      spinner.stop()
     }
   }
-
   await clearConsole()
 
-  // // 前面完成准备工作，正式开始创建项目
-  // const creator = new Creator(name, targetDir)
-  // await creator.create(options)
+  // 前面完成准备工作，正式开始创建项目
+  const creator = new Creator(name, targetDir)
+  await creator.create(options)
 }
 
 module.exports = (...args) => {
   return create(...args).catch(err => {
-    // spinner.stop()
+    spinner.stop()
     error(err)
   })
 }
