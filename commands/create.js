@@ -2,14 +2,20 @@
  * @Author: Aiden
  * @Date: 2019-12-03 11:30:27
  * @LastEditors: Aiden
- * @LastEditTime: 2019-12-09 11:29:22
+ * @LastEditTime: 2019-12-09 15:39:39
  */
 
 const path = require('path');
 const ora = require('ora');
 
-const Creator = require('./Creator');
-const { createProjectDir } = require('../utils/create-util');
+const {
+  createProjectDir,
+  installDeps,
+  fetchingRemotePreset,
+  generateProject,
+  rewriteFiles,
+  createSuccess,
+} = require('../utils/create-util');
 const { error, clearConsole } = require('../utils/logger-util');
 
 const spinner = ora();
@@ -35,9 +41,26 @@ async function create(project_name, options) {
   if (!create_status) return;
 
   // 前面完成准备工作，正式开始创建项目
+
+  // 获取预设模板
   await clearConsole();
-  const creator = new Creator(name, target_dir);
-  await creator.create(options);
+  const preset_tmpdir = await fetchingRemotePreset();
+
+  // 生产工程
+  await clearConsole();
+  const package_json = await generateProject(name, target_dir, preset_tmpdir);
+
+  // 重写 package.json 和 README.md
+  await clearConsole();
+  await rewriteFiles(package_json, target_dir);
+
+  // 安装依赖
+  await clearConsole();
+  await installDeps(target_dir);
+
+  // 创建成功
+  await clearConsole();
+  createSuccess(name);
 }
 
 module.exports = (...args) => create(...args).catch((err) => {
