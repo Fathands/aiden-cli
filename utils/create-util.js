@@ -8,50 +8,48 @@
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const chalk = require('chalk');
-const execa = require('execa')
-const ora = require('ora')
+const execa = require('execa');
+const ora = require('ora');
 
-const spinner = ora()
+const spinner = ora();
 
 /**
  * @description: 安装依赖
- * @param {type} 
- * @return: 
+ * @param {type}
+ * @return:
  */
-function installDeps (targetDir) {
+function installDeps(targetDir) {
   console.log('\n');
-  spinner.text = `⚙  安装依赖中...`
-  spinner.start()
-  let args = ['install', '--loglevel', 'error']
-  
+  spinner.text = '⚙  安装依赖中...';
+  spinner.start();
+  const args = ['install', '--loglevel', 'error'];
+
   return new Promise((resolve, reject) => {
-
     const child = execa('npm', args, {
-      cwd: targetDir
-    })
+      cwd: targetDir,
+    });
 
-    child.on('close', code => {
+    child.on('close', (code) => {
       if (code !== 0) {
-        reject(`command failed: npm ${args.join(' ')}`)
-        spinner.stop()
-        return
+        reject(`command failed: npm ${args.join(' ')}`);
+        spinner.stop();
+        return;
       }
-      spinner.stop()
-      resolve()
-    })
-  })
+      spinner.stop();
+      resolve();
+    });
+  });
 }
 
 async function createProjectDir(in_current, target_dir) {
-  
   if (in_current) {
     const { ok } = await inquirer.prompt([
       {
         name: 'ok',
         type: 'confirm',
-        message: '是否在当前文件夹下创建项目？'
-      }
-    ])
+        message: '是否在当前文件夹下创建项目？',
+      },
+    ]);
     if (!ok) {
       return ok;
     }
@@ -63,18 +61,18 @@ async function createProjectDir(in_current, target_dir) {
         message: `目标文件夹 ${chalk.cyan(target_dir)} 已经存在，请选择：`,
         choices: [
           { name: '覆盖', value: true },
-          { name: '取消', value: false }
-        ]
-      }
-    ])
+          { name: '取消', value: false },
+        ],
+      },
+    ]);
     if (!action) {
       return action;
-    } else if (action) {
+    } if (action) {
       console.log('\n');
-      spinner.text = `${chalk.red('removing')} ${chalk.cyan(target_dir)}`
-      spinner.start()
-      await fs.remove(target_dir)
-      spinner.stop()
+      spinner.text = `${chalk.red('removing')} ${chalk.cyan(target_dir)}`;
+      spinner.start();
+      await fs.remove(target_dir);
+      spinner.stop();
     }
   }
   return true;
@@ -82,5 +80,5 @@ async function createProjectDir(in_current, target_dir) {
 
 module.exports = {
   installDeps,
-  createProjectDir
-}
+  createProjectDir,
+};

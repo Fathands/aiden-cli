@@ -6,14 +6,14 @@ const minimist = require('minimist');
 
 const { cleanArgs } = require('../utils/common-util');
 
-const version = require('../package').version;
+const { version } = require('../package');
 
 program.version(version, '-v, --version');
 
 program.usage('<command> [option]');
 
 program.command('create <app-name>')
-  .option("-d --dir <dir>", "create a directory")
+  .option('-d --dir <dir>', 'create a directory')
   .description('create a new project')
   .action((name, command) => {
     const options = cleanArgs(command);

@@ -1,8 +1,9 @@
-const chalk = require('chalk')
-const inquirer = require('inquirer')
-const EventEmitter = require('events')
-const ora = require('ora')
-const spinner = ora()
+const chalk = require('chalk');
+const inquirer = require('inquirer');
+const EventEmitter = require('events');
+const ora = require('ora');
+
+const spinner = ora();
 
 const { installDeps } = require('../utils/create-util');
 const { error, clearConsole } = require('../utils/logger-util');
@@ -13,16 +14,16 @@ const generateReadme = require('../utils/generate-readme-util');
 
 module.exports = class Creator extends EventEmitter {
   constructor(name, target_dir) {
-    super()
+    super();
 
-    this.name = name
-    this.target_dir = target_dir
+    this.name = name;
+    this.target_dir = target_dir;
   }
 
-  async create(cliOptions = {}) {
-    const { name, target_dir } = this
-    let preset = null
-    
+  async create() {
+    const { name, target_dir } = this;
+    let preset = null;
+
     const { template } = await inquirer.prompt([
       {
         name: 'template',
@@ -30,78 +31,77 @@ module.exports = class Creator extends EventEmitter {
         message: '请选择页面配置方式',
         choices: [
           { name: '单页面', value: 'single_page' },
-          { name: '多页面', value: 'multiple_pages' }
-        ]
-      }
-    ])
-    await clearConsole()
-    spinner.text = `Fetching remote preset ${chalk.cyan(template)}...`
-    spinner.start()
+          { name: '多页面', value: 'multiple_pages' },
+        ],
+      },
+    ]);
+    await clearConsole();
+    spinner.text = `Fetching remote preset ${chalk.cyan(template)}...`;
+    spinner.start();
     try {
-      preset = await loadRemotePreset(template, this.target_dir)
-      spinner.stop()
+      preset = await loadRemotePreset(template, this.target_dir);
+      spinner.stop();
     } catch (e) {
-      spinner.stop()
-      error(`Failed fetching remote preset ${chalk.cyan(template)}:`)
-      throw e
+      spinner.stop();
+      error(`Failed fetching remote preset ${chalk.cyan(template)}:`);
+      throw e;
     }
-    
-    await clearConsole()
-    console.log(chalk.blue.bold(`aiden-cli v${require('../package.json').version}`))
+
+    await clearConsole();
+    console.log(chalk.blue.bold(`aiden-cli v${require('../package.json').version}`));
     console.log(`\n✨  正在创建项目 ${chalk.yellow(target_dir)}...\n`);
-    
+
     // 设置文件名，版本号等
     const { package_vertions, package_des, package_author } = await inquirer.prompt([
       {
         name: 'package_author',
-        message: `请输入作者`,
+        message: '请输入作者',
         default: 'aidenhuang <aidenhuang@lexin.com>',
       },
       {
         name: 'package_vertions',
-        message: `请输入项目版本号`,
+        message: '请输入项目版本号',
         default: '0.0.1',
       },
       {
         name: 'package_des',
-        message: `请输入项目简介`,
+        message: '请输入项目简介',
         default: 'project created by aiden-cli',
-      }
-    ])
+      },
+    ]);
 
     // 将下载的临时文件拷贝到项目中
-    const package_json = await copyFile(preset.tmpdir, preset.targetDir)
+    const package_json = await copyFile(preset.tmpdir, preset.targetDir);
 
     const package_json_new = Object.assign(package_json, {
-      name: name,
+      name,
       author: package_author,
       version: package_vertions,
-      description: package_des
-    })
+      description: package_des,
+    });
 
     // 重写 package.json 和 README.md
-    await clearConsole()
-    spinner.text = `📄  生成 ${chalk.yellow('package.json')} 等模板文件`
-    spinner.start()
+    await clearConsole();
+    spinner.text = `📄  生成 ${chalk.yellow('package.json')} 等模板文件`;
+    spinner.start();
 
     await writeFileTree(target_dir, {
       'package.json': JSON.stringify(package_json_new, null, 4),
-      'README.md': generateReadme(package_json_new)
-    })
+      'README.md': generateReadme(package_json_new),
+    });
 
-    spinner.stop()
-    
+    spinner.stop();
+
     // 安装依赖
-    await clearConsole()
-    await installDeps(target_dir)
-      
+    await clearConsole();
+    await installDeps(target_dir);
+
     // 创建成功
-    await clearConsole()
-    console.log(`\n✨  项目创建成功 ${chalk.yellow(name)}.`)
-    console.log(`\n✨  请按如下命令，开始愉快开发吧！\n\n` +
-      (this.target_dir === process.cwd() ? `` : chalk.cyan(` ${chalk.gray('$')} cd ${name}\n`)) +
-      chalk.cyan(` ${chalk.gray('$')} npm run dev\n`)+
-      chalk.cyan(` ${chalk.gray('$')} npm run build`)
-    )
+    await clearConsole();
+    console.log(`\n✨  项目创建成功 ${chalk.yellow(name)}.`);
+    console.log(`\n✨  请按如下命令，开始愉快开发吧！\n\n${
+      this.target_dir === process.cwd() ? '' : chalk.cyan(` ${chalk.gray('$')} cd ${name}\n`)
+    }${chalk.cyan(` ${chalk.gray('$')} npm run dev\n`)
+    }${chalk.cyan(` ${chalk.gray('$')} npm run build`)}`);
   }
-}
+};

@@ -5,7 +5,7 @@
  * @LastEditTime: 2019-12-06 16:21:42
  */
 
-module.exports = function generateReadme (pkg) {
+module.exports = function generateReadme(pkg) {
   return [
     `# ${pkg.name}`,
     `## ${pkg.description}`,
@@ -27,5 +27,5 @@ module.exports = function generateReadme (pkg) {
     '}',
     '',
     '```',
-  ].join('\n')
-}
+  ].join('\n');
+};
