@@ -4,7 +4,7 @@ const EventEmitter = require('events')
 const ora = require('ora')
 const spinner = ora()
 
-const { installDeps } = require('../utils/common-util');
+const { installDeps } = require('../utils/create-util');
 const { error, clearConsole } = require('../utils/logger-util');
 const loadRemotePreset = require('../utils/load-remote-preset-util');
 const copyFile = require('../utils/copy-file-util');
