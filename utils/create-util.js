@@ -2,12 +2,12 @@
  * @Author: Aiden
  * @Date: 2019-12-09 10:47:47
  * @LastEditors: Aiden
- * @LastEditTime: 2019-12-09 15:26:38
+ * @LastEditTime: 2019-12-09 15:50:42
  */
 
 const fs = require('fs-extra');
 const path = require('path');
-const inquirer = require('inquirer');
+const { prompt } = require('inquirer');
 const chalk = require('chalk');
 const execa = require('execa');
 const ora = require('ora');
@@ -24,7 +24,7 @@ const { error, clearConsole } = require('./logger-util');
  */
 async function createProjectDir(in_current, target_dir) {
   if (in_current) {
-    const { ok } = await inquirer.prompt([
+    const { ok } = await prompt([
       {
         name: 'ok',
         type: 'confirm',
@@ -35,7 +35,7 @@ async function createProjectDir(in_current, target_dir) {
       return ok;
     }
   } else if (fs.existsSync(target_dir)) { // 检查文件夹是否存在
-    const { action } = await inquirer.prompt([
+    const { action } = await prompt([
       {
         name: 'action',
         type: 'list',
@@ -91,7 +91,7 @@ async function loadRemotePreset(name) {
  */
 async function fetchingRemotePreset() {
   let preset_tmpdir;
-  const { template } = await inquirer.prompt([
+  const { template } = await prompt([
     {
       name: 'template',
       type: 'list',
@@ -138,7 +138,7 @@ async function generateProject(name, target_dir, preset_tmpdir) {
   console.log(`\n✨  正在创建项目 ${chalk.yellow(target_dir)}...\n`);
 
   // 设置文件名，版本号等
-  const { package_vertions, package_des, package_author } = await inquirer.prompt([
+  const { package_vertions, package_des, package_author } = await prompt([
     {
       name: 'package_author',
       message: '请输入作者',

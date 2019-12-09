@@ -23,4 +23,10 @@ program.command('create <app-name>')
     require('../commands/create.js')(name, options);
   });
 
+program.command('cz')
+  .description('tool for git commit')
+  .action(() => {
+    require('../commands/cz.js');
+  });
+
 program.parse(process.argv);
