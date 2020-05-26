@@ -29,4 +29,10 @@ program.command('cz')
     require('../commands/cz.js');
   });
 
+program.command('cfl')
+  .description('check file line before git commit')
+  .action(() => {
+    require('../commands/check-file-line.js')();
+  });
+
 program.parse(process.argv);
